@@ -897,83 +897,65 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ template, resumeData, onU
     // Plain Pro Template
     if (template.id === 'plain-pro') {
       return (
-        <div className="bg-white shadow-lg max-w-[8.5in] mx-auto p-8">
+        <div className="bg-white shadow-sm border max-w-[8.5in] mx-auto p-8">
           {/* Header */}
-          <div className="text-center border-b pb-6 mb-8">
-            <h1 className="font-bold text-gray-900 text-3xl mb-2">
+          <div className="text-center mb-6">
+            <h1 className="font-bold text-gray-900 text-2xl mb-1">
               <EditableField
                 fieldId="name"
                 value={resumeData.personalInfo.name}
                 onChange={(value) => handlePersonalInfoChange('name', value)}
               />
             </h1>
-            <div className="text-gray-600 space-y-1">
-              <div>
-                <EditableField
-                  fieldId="email"
-                  value={resumeData.personalInfo.email}
-                  onChange={(value) => handlePersonalInfoChange('email', value)}
-                />
-                {' • '}
-                <EditableField
-                  fieldId="phone"
-                  value={resumeData.personalInfo.phone}
-                  onChange={(value) => handlePersonalInfoChange('phone', value)}
-                />
-              </div>
-              <div>
-                <EditableField
-                  fieldId="location"
-                  value={resumeData.personalInfo.location}
-                  onChange={(value) => handlePersonalInfoChange('location', value)}
-                />
-              </div>
+            <div className="text-gray-600">
+              <EditableField
+                fieldId="email"
+                value={resumeData.personalInfo.email}
+                onChange={(value) => handlePersonalInfoChange('email', value)}
+              />
+              {' | '}
+              <EditableField
+                fieldId="phone"
+                value={resumeData.personalInfo.phone}
+                onChange={(value) => handlePersonalInfoChange('phone', value)}
+              />
+              {' | '}
+              <EditableField
+                fieldId="location"
+                value={resumeData.personalInfo.location}
+                onChange={(value) => handlePersonalInfoChange('location', value)}
+              />
             </div>
           </div>
-
+      
           {/* Summary */}
-          <div className="mb-6">
-            <SectionHeader title="Professional Summary" sectionId="summary" />
+          <div className="mb-4">
+            <h3 className="font-bold text-gray-900 mb-2">PROFESSIONAL SUMMARY</h3>
+            <hr className="mb-2" />
             <EditableField
               fieldId="summary"
               value={resumeData.summary}
               onChange={handleSummaryChange}
-              className="text-gray-700 leading-relaxed"
+              className="text-gray-700"
               multiline
             />
           </div>
-
+      
           {/* Experience */}
-          <div className="mb-6">
-            <SectionHeader title="Experience" sectionId="experience" />
+          <div className="mb-4">
+            <h3 className="font-bold text-gray-900 mb-2">PROFESSIONAL EXPERIENCE</h3>
+            <hr className="mb-2" />
             {resumeData.experience.map((exp, index) => (
-              <div key={exp.id} className="mb-4 relative group">
-                {editMode && (
-                  <button
-                    onClick={() => removeExperience(index)}
-                    className="absolute -right-2 -top-2 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                )}
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h4 className="font-semibold text-gray-900">
-                      <EditableField
-                        fieldId={`exp-title-${index}`}
-                        value={exp.title}
-                        onChange={(value) => handleExperienceChange(index, 'title', value)}
-                      />
-                    </h4>
-                    <div className="text-gray-600 font-medium">
-                      <EditableField
-                        fieldId={`exp-company-${index}`}
-                        value={exp.company}
-                        onChange={(value) => handleExperienceChange(index, 'company', value)}
-                      />
-                    </div>
-                  </div>
-                  <div className="text-gray-500 text-sm">
+              <div key={exp.id} className="mb-3 relative group">
+                <div className="flex justify-between">
+                  <h4 className="font-bold text-gray-900">
+                    <EditableField
+                      fieldId={`exp-title-${index}`}
+                      value={exp.title}
+                      onChange={(value) => handleExperienceChange(index, 'title', value)}
+                    />
+                  </h4>
+                  <span className="text-gray-600">
                     <EditableField
                       fieldId={`exp-dates-${index}`}
                       value={`${exp.startDate} - ${exp.current ? 'Present' : exp.endDate}`}
@@ -988,88 +970,72 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ template, resumeData, onU
                         }
                       }}
                     />
-                  </div>
+                  </span>
                 </div>
-                <ul className="space-y-1 ml-4">
+                <div className="font-semibold text-gray-700">
+                   <EditableField
+                      fieldId={`exp-company-${index}`}
+                      value={exp.company}
+                      onChange={(value) => handleExperienceChange(index, 'company', value)}
+                    />
+                </div>
+                <ul className="mt-1">
                   {exp.bullets.map((bullet, bulletIndex) => (
-                    <li key={bulletIndex} className="flex items-start group">
-                      <span className="text-gray-400 mr-2 mt-1">•</span>
-                      <div className="flex-1 relative">
-                        <EditableField
-                          fieldId={`bullet-${index}-${bulletIndex}`}
-                          value={bullet}
-                          onChange={(value) => handleBulletChange(index, bulletIndex, value)}
-                          className="text-gray-700"
-                        />
-                        {editMode && (
-                          <button
-                            onClick={() => removeBullet(index, bulletIndex)}
-                            className="absolute -right-6 top-0 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </button>
-                        )}
-                      </div>
-                    </li>
+                     <li key={bulletIndex} className="flex items-start group">
+                      <span className="text-gray-600 mr-2 mt-1">•</span>
+                       <div className="flex-1 relative">
+                         <EditableField
+                           fieldId={`bullet-${index}-${bulletIndex}`}
+                           value={bullet}
+                           onChange={(value) => handleBulletChange(index, bulletIndex, value)}
+                           className="text-gray-700"
+                         />
+                       </div>
+                     </li>
                   ))}
-                  {editMode && (
-                    <li>
-                      <button
-                        onClick={() => addBullet(index)}
-                        className="flex items-center space-x-1 text-blue-600 hover:text-blue-700 text-sm"
-                      >
-                        <Plus className="w-3 h-3" />
-                        <span>Add bullet</span>
-                      </button>
-                    </li>
-                  )}
                 </ul>
               </div>
             ))}
-            {editMode && (
-              <button
-                onClick={addExperience}
-                className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 mt-4"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Add Experience</span>
-              </button>
-            )}
           </div>
-
+      
           {/* Education */}
-          <div className="mb-6">
-            <SectionHeader title="Education" sectionId="education" />
+          <div className="mb-4">
+            <h3 className="font-bold text-gray-900 mb-2">EDUCATION</h3>
+            <hr className="mb-2" />
             {resumeData.education.map((edu, index) => (
-              <div key={edu.id}>
-                <h4 className="font-semibold text-gray-900">
-                  <EditableField
-                    fieldId={`edu-degree-${index}`}
-                    value={edu.degree}
-                    onChange={(value) => handleEducationChange(index, 'degree', value)}
-                  />
-                </h4>
-                <div className="text-gray-600">
-                  <EditableField
-                    fieldId={`edu-school-${index}`}
-                    value={edu.school}
-                    onChange={(value) => handleEducationChange(index, 'school', value)}
-                  />
+              <div key={edu.id} className="flex justify-between">
+                <div>
+                  <h4 className="font-bold text-gray-900">
+                    <EditableField
+                      fieldId={`edu-degree-${index}`}
+                      value={edu.degree}
+                      onChange={(value) => handleEducationChange(index, 'degree', value)}
+                    />
+                  </h4>
+                  <div className="text-gray-700">
+                    <EditableField
+                      fieldId={`edu-school-${index}`}
+                      value={edu.school}
+                      onChange={(value) => handleEducationChange(index, 'school', value)}
+                    />
+                  </div>
                 </div>
+                <span className="text-gray-600">
+                  <EditableField
+                    fieldId={`edu-date-${index}`}
+                    value={edu.graduationDate}
+                    onChange={(value) => handleEducationChange(index, 'graduationDate', value)}
+                  />
+                </span>
               </div>
             ))}
           </div>
-
+      
           {/* Skills */}
           <div>
-            <SectionHeader title="Skills" sectionId="skills" />
-            <div className="flex flex-wrap gap-2">
-              {resumeData.skills.map((skill, index) => (
-                <span key={index} className="bg-gray-100 text-gray-700 rounded-full px-3 py-1">
-                  {skill}
-                </span>
-              ))}
-            </div>
+            <h3 className="font-bold text-gray-900 mb-2">TECHNICAL SKILLS</h3>
+            <hr className="mb-2" />
+            <p className="text-gray-700">{resumeData.skills.join(', ')}</p>
           </div>
         </div>
       );
@@ -1077,364 +1043,333 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ template, resumeData, onU
 
     // Smart Accent Template
     if (template.id === 'smart-accent') {
-      return (
-        <div className="bg-white shadow-lg max-w-[8.5in] mx-auto p-8">
-          {/* Header */}
-          <div className="text-center border-b pb-6 mb-8">
-            <h1 className="font-bold text-gray-900 text-3xl mb-2">
-              <EditableField
-                fieldId="name"
-                value={resumeData.personalInfo.name}
-                onChange={(value) => handlePersonalInfoChange('name', value)}
-              />
-            </h1>
-            <div className="text-gray-600 space-y-1">
+      // PASTE THIS CODE FOR 'smart-accent'
+return (
+  <div className="bg-white shadow-lg max-w-[8.5in] mx-auto">
+    <div className="p-8">
+      {/* Header with accent */}
+      <div className="bg-gradient-to-r from-purple-600 to-blue-600 text-white p-6 mb-6 -mx-8 -mt-8">
+        <h1 className="font-bold text-3xl mb-2">
+          <EditableField
+            fieldId="name"
+            value={resumeData.personalInfo.name}
+            onChange={(value) => handlePersonalInfoChange('name', value)}
+            className="text-white"
+          />
+        </h1>
+        <div className="space-y-1">
+          <div>
+            <EditableField
+              fieldId="email"
+              value={resumeData.personalInfo.email}
+              onChange={(value) => handlePersonalInfoChange('email', value)}
+               className="text-gray-200"
+            />
+            {' • '}
+            <EditableField
+              fieldId="phone"
+              value={resumeData.personalInfo.phone}
+              onChange={(value) => handlePersonalInfoChange('phone', value)}
+               className="text-gray-200"
+            />
+          </div>
+          <div>
+            <EditableField
+              fieldId="location"
+              value={resumeData.personalInfo.location}
+              onChange={(value) => handlePersonalInfoChange('location', value)}
+               className="text-gray-200"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Summary */}
+      <div className="mb-6">
+        <h3 className="font-semibold text-purple-600 border-b-2 border-purple-200 mb-3 pb-1">
+          PROFESSIONAL SUMMARY
+        </h3>
+        <EditableField
+          fieldId="summary"
+          value={resumeData.summary}
+          onChange={handleSummaryChange}
+          className="text-gray-700 leading-relaxed"
+          multiline
+        />
+      </div>
+
+      {/* Experience */}
+      <div className="mb-6">
+        <h3 className="font-semibold text-purple-600 border-b-2 border-purple-200 mb-3 pb-1">
+          EXPERIENCE
+        </h3>
+        {resumeData.experience.map((exp, index) => (
+          <div key={exp.id} className="mb-4">
+            <div className="flex justify-between items-start mb-2">
               <div>
-                <EditableField
-                  fieldId="email"
-                  value={resumeData.personalInfo.email}
-                  onChange={(value) => handlePersonalInfoChange('email', value)}
-                />
-                {' • '}
-                <EditableField
-                  fieldId="phone"
-                  value={resumeData.personalInfo.phone}
-                  onChange={(value) => handlePersonalInfoChange('phone', value)}
-                />
+                <h4 className="font-semibold text-gray-900">
+                  <EditableField
+                    fieldId={`exp-title-${index}`}
+                    value={exp.title}
+                    onChange={(value) => handleExperienceChange(index, 'title', value)}
+                  />
+                </h4>
+                <div className="text-purple-600 font-medium">
+                  <EditableField
+                    fieldId={`exp-company-${index}`}
+                    value={exp.company}
+                    onChange={(value) => handleExperienceChange(index, 'company', value)}
+                  />
+                </div>
               </div>
-              <div>
+              <div className="text-gray-500 text-sm bg-gray-100 px-2 py-1 rounded">
                 <EditableField
-                  fieldId="location"
-                  value={resumeData.personalInfo.location}
-                  onChange={(value) => handlePersonalInfoChange('location', value)}
+                  fieldId={`exp-dates-${index}`}
+                  value={`${exp.startDate} - ${exp.current ? 'Present' : exp.endDate}`}
+                  onChange={(value) => {
+                    const [start, end] = value.split(' - ');
+                    handleExperienceChange(index, 'startDate', start);
+                    if (end !== 'Present') {
+                      handleExperienceChange(index, 'endDate', end);
+                      handleExperienceChange(index, 'current', false);
+                    } else {
+                      handleExperienceChange(index, 'current', true);
+                    }
+                  }}
                 />
               </div>
             </div>
-          </div>
-
-          {/* Summary */}
-          <div className="mb-6">
-            <SectionHeader title="Professional Summary" sectionId="summary" />
-            <EditableField
-              fieldId="summary"
-              value={resumeData.summary}
-              onChange={handleSummaryChange}
-              className="text-gray-700 leading-relaxed"
-              multiline
-            />
-          </div>
-
-          {/* Experience */}
-          <div className="mb-6">
-            <SectionHeader title="Experience" sectionId="experience" />
-            {resumeData.experience.map((exp, index) => (
-              <div key={exp.id} className="mb-4 relative group">
-                {editMode && (
-                  <button
-                    onClick={() => removeExperience(index)}
-                    className="absolute -right-2 -top-2 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                )}
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h4 className="font-semibold text-gray-900">
-                      <EditableField
-                        fieldId={`exp-title-${index}`}
-                        value={exp.title}
-                        onChange={(value) => handleExperienceChange(index, 'title', value)}
-                      />
-                    </h4>
-                    <div className="text-gray-600 font-medium">
-                      <EditableField
-                        fieldId={`exp-company-${index}`}
-                        value={exp.company}
-                        onChange={(value) => handleExperienceChange(index, 'company', value)}
-                      />
-                    </div>
-                  </div>
-                  <div className="text-gray-500 text-sm">
+            <ul className="space-y-1 ml-4">
+              {exp.bullets.map((bullet, bulletIndex) => (
+                <li key={bulletIndex} className="flex items-start">
+                  <span className="text-purple-400 mr-2 mt-1">▸</span>
+                  <div className="flex-1 relative">
                     <EditableField
-                      fieldId={`exp-dates-${index}`}
-                      value={`${exp.startDate} - ${exp.current ? 'Present' : exp.endDate}`}
-                      onChange={(value) => {
-                        const [start, end] = value.split(' - ');
-                        handleExperienceChange(index, 'startDate', start);
-                        if (end !== 'Present') {
-                          handleExperienceChange(index, 'endDate', end);
-                          handleExperienceChange(index, 'current', false);
-                        } else {
-                          handleExperienceChange(index, 'current', true);
-                        }
-                      }}
+                      fieldId={`bullet-${index}-${bulletIndex}`}
+                      value={bullet}
+                      onChange={(value) => handleBulletChange(index, bulletIndex, value)}
+                      className="text-gray-700"
                     />
                   </div>
-                </div>
-                <ul className="space-y-1 ml-4">
-                  {exp.bullets.map((bullet, bulletIndex) => (
-                    <li key={bulletIndex} className="flex items-start group">
-                      <span className="text-gray-400 mr-2 mt-1">•</span>
-                      <div className="flex-1 relative">
-                        <EditableField
-                          fieldId={`bullet-${index}-${bulletIndex}`}
-                          value={bullet}
-                          onChange={(value) => handleBulletChange(index, bulletIndex, value)}
-                          className="text-gray-700"
-                        />
-                        {editMode && (
-                          <button
-                            onClick={() => removeBullet(index, bulletIndex)}
-                            className="absolute -right-6 top-0 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </button>
-                        )}
-                      </div>
-                    </li>
-                  ))}
-                  {editMode && (
-                    <li>
-                      <button
-                        onClick={() => addBullet(index)}
-                        className="flex items-center space-x-1 text-blue-600 hover:text-blue-700 text-sm"
-                      >
-                        <Plus className="w-3 h-3" />
-                        <span>Add bullet</span>
-                      </button>
-                    </li>
-                  )}
-                </ul>
-              </div>
-            ))}
-            {editMode && (
-              <button
-                onClick={addExperience}
-                className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 mt-4"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Add Experience</span>
-              </button>
-            )}
+                </li>
+              ))}
+            </ul>
           </div>
+        ))}
+      </div>
 
-          {/* Education */}
-          <div className="mb-6">
-            <SectionHeader title="Education" sectionId="education" />
-            {resumeData.education.map((edu, index) => (
-              <div key={edu.id}>
-                <h4 className="font-semibold text-gray-900">
-                  <EditableField
-                    fieldId={`edu-degree-${index}`}
-                    value={edu.degree}
-                    onChange={(value) => handleEducationChange(index, 'degree', value)}
-                  />
-                </h4>
-                <div className="text-gray-600">
-                  <EditableField
+      {/* Education & Skills */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <h3 className="font-semibold text-purple-600 border-b-2 border-purple-200 mb-3 pb-1">
+            EDUCATION
+          </h3>
+          {resumeData.education.map((edu, index) => (
+            <div key={edu.id}>
+              <h4 className="font-semibold text-gray-900">
+                <EditableField
+                  fieldId={`edu-degree-${index}`}
+                  value={edu.degree}
+                  onChange={(value) => handleEducationChange(index, 'degree', value)}
+                />
+              </h4>
+              <div className="text-gray-600">
+                 <EditableField
                     fieldId={`edu-school-${index}`}
                     value={edu.school}
                     onChange={(value) => handleEducationChange(index, 'school', value)}
                   />
-                </div>
               </div>
+              <div className="text-purple-600 text-sm">
+                 <EditableField
+                    fieldId={`edu-date-${index}`}
+                    value={edu.graduationDate}
+                    onChange={(value) => handleEducationChange(index, 'graduationDate', value)}
+                  />
+              </div>
+            </div>
+          ))}
+        </div>
+        <div>
+          <h3 className="font-semibold text-purple-600 border-b-2 border-purple-200 mb-3 pb-1">
+            SKILLS
+          </h3>
+          <div className="flex flex-wrap gap-1">
+            {resumeData.skills.map((skill, index) => (
+              <span key={index} className="bg-purple-100 text-purple-700 rounded px-2 py-1">
+                {skill}
+              </span>
             ))}
           </div>
-
-          {/* Skills */}
-          <div>
-            <SectionHeader title="Skills" sectionId="skills" />
-            <div className="flex flex-wrap gap-2">
-              {resumeData.skills.map((skill, index) => (
-                <span key={index} className="bg-gray-100 text-gray-700 rounded-full px-3 py-1">
-                  {skill}
-                </span>
-              ))}
-            </div>
-          </div>
         </div>
-      );
+      </div>
+    </div>
+  </div>
+);
     }
 
     // Elegant Contrast Template
     if (template.id === 'elegant-contrast') {
-      return (
-        <div className="bg-white shadow-lg max-w-[8.5in] mx-auto p-8">
-          {/* Header */}
-          <div className="text-center border-b pb-6 mb-8">
-            <h1 className="font-bold text-gray-900 text-3xl mb-2">
-              <EditableField
-                fieldId="name"
-                value={resumeData.personalInfo.name}
-                onChange={(value) => handlePersonalInfoChange('name', value)}
-              />
-            </h1>
-            <div className="text-gray-600 space-y-1">
-              <div>
-                <EditableField
-                  fieldId="email"
-                  value={resumeData.personalInfo.email}
-                  onChange={(value) => handlePersonalInfoChange('email', value)}
-                />
-                {' • '}
-                <EditableField
-                  fieldId="phone"
-                  value={resumeData.personalInfo.phone}
-                  onChange={(value) => handlePersonalInfoChange('phone', value)}
-                />
-              </div>
-              <div>
-                <EditableField
-                  fieldId="location"
-                  value={resumeData.personalInfo.location}
-                  onChange={(value) => handlePersonalInfoChange('location', value)}
-                />
-              </div>
-            </div>
-          </div>
+      // PASTE THIS CODE FOR 'elegant-contrast'
+return (
+  <div className="bg-white shadow-lg max-w-[8.5in] mx-auto">
+    <div className="p-8">
+      {/* Header */}
+      <div className="bg-gray-900 text-white p-6 mb-6 -mx-8 -mt-8">
+        <h1 className="font-bold text-3xl mb-2">
+          <EditableField
+            fieldId="name"
+            value={resumeData.personalInfo.name}
+            onChange={(value) => handlePersonalInfoChange('name', value)}
+            className="text-white"
+          />
+        </h1>
+        <div className="text-gray-300">
+          <EditableField
+            fieldId="email"
+            value={resumeData.personalInfo.email}
+            onChange={(value) => handlePersonalInfoChange('email', value)}
+            className="text-gray-300"
+          />
+          {' • '}
+          <EditableField
+            fieldId="phone"
+            value={resumeData.personalInfo.phone}
+            onChange={(value) => handlePersonalInfoChange('phone', value)}
+            className="text-gray-300"
+          />
+          {' • '}
+          <EditableField
+            fieldId="location"
+            value={resumeData.personalInfo.location}
+            onChange={(value) => handlePersonalInfoChange('location', value)}
+            className="text-gray-300"
+          />
+        </div>
+      </div>
 
-          {/* Summary */}
-          <div className="mb-6">
-            <SectionHeader title="Professional Summary" sectionId="summary" />
-            <EditableField
-              fieldId="summary"
-              value={resumeData.summary}
-              onChange={handleSummaryChange}
-              className="text-gray-700 leading-relaxed"
-              multiline
-            />
-          </div>
+      {/* Summary */}
+      <div className="mb-6">
+        <h3 className="font-semibold text-gray-900 mb-3">
+          <span className="bg-gray-900 text-white px-2 py-1">SUMMARY</span>
+        </h3>
+        <EditableField
+          fieldId="summary"
+          value={resumeData.summary}
+          onChange={handleSummaryChange}
+          className="text-gray-700 leading-relaxed"
+          multiline
+        />
+      </div>
 
-          {/* Experience */}
-          <div className="mb-6">
-            <SectionHeader title="Experience" sectionId="experience" />
-            {resumeData.experience.map((exp, index) => (
-              <div key={exp.id} className="mb-4 relative group">
-                {editMode && (
-                  <button
-                    onClick={() => removeExperience(index)}
-                    className="absolute -right-2 -top-2 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                )}
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h4 className="font-semibold text-gray-900">
-                      <EditableField
-                        fieldId={`exp-title-${index}`}
-                        value={exp.title}
-                        onChange={(value) => handleExperienceChange(index, 'title', value)}
-                      />
-                    </h4>
-                    <div className="text-gray-600 font-medium">
-                      <EditableField
-                        fieldId={`exp-company-${index}`}
-                        value={exp.company}
-                        onChange={(value) => handleExperienceChange(index, 'company', value)}
-                      />
-                    </div>
-                  </div>
-                  <div className="text-gray-500 text-sm">
+      {/* Experience */}
+      <div className="mb-6">
+        <h3 className="font-semibold text-gray-900 mb-3">
+          <span className="bg-gray-900 text-white px-2 py-1">EXPERIENCE</span>
+        </h3>
+        {resumeData.experience.map((exp, index) => (
+          <div key={exp.id} className="mb-4">
+            <div className="border-l-4 border-gray-900 pl-4">
+              <div className="flex justify-between items-start mb-2">
+                <div>
+                  <h4 className="font-semibold text-gray-900">
                     <EditableField
-                      fieldId={`exp-dates-${index}`}
-                      value={`${exp.startDate} - ${exp.current ? 'Present' : exp.endDate}`}
-                      onChange={(value) => {
-                        const [start, end] = value.split(' - ');
-                        handleExperienceChange(index, 'startDate', start);
-                        if (end !== 'Present') {
-                          handleExperienceChange(index, 'endDate', end);
-                          handleExperienceChange(index, 'current', false);
-                        } else {
-                          handleExperienceChange(index, 'current', true);
-                        }
-                      }}
+                      fieldId={`exp-title-${index}`}
+                      value={exp.title}
+                      onChange={(value) => handleExperienceChange(index, 'title', value)}
+                    />
+                  </h4>
+                  <div className="text-gray-600 font-medium">
+                    <EditableField
+                      fieldId={`exp-company-${index}`}
+                      value={exp.company}
+                      onChange={(value) => handleExperienceChange(index, 'company', value)}
                     />
                   </div>
                 </div>
-                <ul className="space-y-1 ml-4">
-                  {exp.bullets.map((bullet, bulletIndex) => (
-                    <li key={bulletIndex} className="flex items-start group">
-                      <span className="text-gray-400 mr-2 mt-1">•</span>
-                      <div className="flex-1 relative">
-                        <EditableField
+                <div className="text-gray-500 text-sm">
+                  <EditableField
+                    fieldId={`exp-dates-${index}`}
+                    value={`${exp.startDate} - ${exp.current ? 'Present' : exp.endDate}`}
+                    onChange={(value) => {
+                      const [start, end] = value.split(' - ');
+                      handleExperienceChange(index, 'startDate', start);
+                      if (end !== 'Present') {
+                        handleExperienceChange(index, 'endDate', end);
+                        handleExperienceChange(index, 'current', false);
+                      } else {
+                        handleExperienceChange(index, 'current', true);
+                      }
+                    }}
+                  />
+                </div>
+              </div>
+              <ul className="space-y-1">
+                {exp.bullets.map((bullet, bulletIndex) => (
+                  <li key={bulletIndex} className="flex items-start">
+                    <span className="text-gray-400 mr-2 mt-1">■</span>
+                    <div className="flex-1 relative">
+                       <EditableField
                           fieldId={`bullet-${index}-${bulletIndex}`}
                           value={bullet}
                           onChange={(value) => handleBulletChange(index, bulletIndex, value)}
                           className="text-gray-700"
                         />
-                        {editMode && (
-                          <button
-                            onClick={() => removeBullet(index, bulletIndex)}
-                            className="absolute -right-6 top-0 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </button>
-                        )}
-                      </div>
-                    </li>
-                  ))}
-                  {editMode && (
-                    <li>
-                      <button
-                        onClick={() => addBullet(index)}
-                        className="flex items-center space-x-1 text-blue-600 hover:text-blue-700 text-sm"
-                      >
-                        <Plus className="w-3 h-3" />
-                        <span>Add bullet</span>
-                      </button>
-                    </li>
-                  )}
-                </ul>
-              </div>
-            ))}
-            {editMode && (
-              <button
-                onClick={addExperience}
-                className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 mt-4"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Add Experience</span>
-              </button>
-            )}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
+        ))}
+      </div>
 
-          {/* Education */}
-          <div className="mb-6">
-            <SectionHeader title="Education" sectionId="education" />
-            {resumeData.education.map((edu, index) => (
-              <div key={edu.id}>
-                <h4 className="font-semibold text-gray-900">
-                  <EditableField
+      {/* Education & Skills */}
+      <div className="grid grid-cols-2 gap-8">
+        <div>
+          <h3 className="font-semibold text-gray-900 mb-3">
+            <span className="bg-gray-900 text-white px-2 py-1">EDUCATION</span>
+          </h3>
+          {resumeData.education.map((edu, index) => (
+            <div key={edu.id} className="border-l-4 border-gray-300 pl-4 mb-2">
+              <h4 className="font-semibold text-gray-900">
+                 <EditableField
                     fieldId={`edu-degree-${index}`}
                     value={edu.degree}
                     onChange={(value) => handleEducationChange(index, 'degree', value)}
                   />
-                </h4>
-                <div className="text-gray-600">
-                  <EditableField
-                    fieldId={`edu-school-${index}`}
-                    value={edu.school}
-                    onChange={(value) => handleEducationChange(index, 'school', value)}
-                  />
-                </div>
+              </h4>
+              <div className="text-gray-600">
+                <EditableField
+                  fieldId={`edu-school-${index}`}
+                  value={edu.school}
+                  onChange={(value) => handleEducationChange(index, 'school', value)}
+                />
               </div>
+              <div className="text-gray-500 text-sm">
+                <EditableField
+                  fieldId={`edu-date-${index}`}
+                  value={edu.graduationDate}
+                  onChange={(value) => handleEducationChange(index, 'graduationDate', value)}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+        <div>
+          <h3 className="font-semibold text-gray-900 mb-3">
+            <span className="bg-gray-900 text-white px-2 py-1">SKILLS</span>
+          </h3>
+          <div className="border-l-4 border-gray-300 pl-4 space-y-1">
+            {resumeData.skills.map((skill, index) => (
+              <div key={index} className="text-gray-700">• {skill}</div>
             ))}
           </div>
-
-          {/* Skills */}
-          <div>
-            <SectionHeader title="Skills" sectionId="skills" />
-            <div className="flex flex-wrap gap-2">
-              {resumeData.skills.map((skill, index) => (
-                <span key={index} className="bg-gray-100 text-gray-700 rounded-full px-3 py-1">
-                  {skill}
-                </span>
-              ))}
-            </div>
-          </div>
         </div>
-      );
+      </div>
+    </div>
+  </div>
+);
     }
 
     // For other templates, use the TemplatePreview with editMode=false
@@ -1461,18 +1396,6 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ template, resumeData, onU
           activeSection={activeSection}
           editMode={false}
         />
-      )}
-      
-      {editMode && (
-        <div className="fixed bottom-4 right-4 bg-white rounded-lg shadow-lg border p-4 max-w-sm">
-          <h4 className="font-semibold text-gray-900 mb-2">Editing Tips</h4>
-          <ul className="text-sm text-gray-600 space-y-1">
-            <li>• Click any text to edit inline</li>
-            <li>• Press Enter to save (single line)</li>
-            <li>• Press Escape to cancel</li>
-            <li>• Click + buttons to add new items</li>
-          </ul>
-        </div>
       )}
     </div>
   );
