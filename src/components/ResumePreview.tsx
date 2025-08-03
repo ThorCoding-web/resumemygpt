@@ -3,6 +3,8 @@ import { Plus, Trash2, Sparkles } from 'lucide-react';
 import { Template } from '../App';
 import { ResumeData } from './ResumeEditor';
 import TemplatePreview from './TemplatePreview';
+import RichTextEditor from './RichTextEditor';
+import InlineTextEditor from './InlineTextEditor';
 
 interface ResumePreviewProps {
   template: Template;
@@ -118,224 +120,64 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ template, resumeData, onU
     className?: string;
     multiline?: boolean;
     placeholder?: string;
-  }> = React.memo(({ fieldId, value, onChange, className = '', multiline = false, placeholder }) => {
-    const [localValue, setLocalValue] = useState(value);
+  }> = ({ fieldId, value, onChange, className = '', multiline = false, placeholder }) => {
     const isEditing = editingField === fieldId;
-    const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
-    const displayRef = useRef<HTMLDivElement | HTMLSpanElement>(null);
-
-    useEffect(() => {
-      setLocalValue(value);
-    }, [value]);
-
-    useEffect(() => {
-      if (isEditing && inputRef.current) {
-        inputRef.current.focus();
-        // Don't auto-select, let user place cursor where they want
-      }
-    }, [isEditing]);
-
-    const handleDisplayClick = (e: React.MouseEvent) => {
-      if (!editMode) return;
-      
-      setEditingField(fieldId);
-      setLocalValue(value);
-      
-      // Focus the input after a small delay to ensure it's rendered
-      setTimeout(() => {
-        if (inputRef.current) {
-          inputRef.current.focus();
-          
-          // For single-line inputs, try to position cursor based on click
-          if (!multiline && inputRef.current instanceof HTMLInputElement) {
-            const rect = inputRef.current.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            
-            // Get the computed style to calculate character width more accurately
-            const computedStyle = window.getComputedStyle(inputRef.current);
-            const fontSize = parseFloat(computedStyle.fontSize);
-            const fontFamily = computedStyle.fontFamily;
-            
-            // Create a temporary span to measure character width
-            const tempSpan = document.createElement('span');
-            tempSpan.style.fontSize = fontSize + 'px';
-            tempSpan.style.fontFamily = fontFamily;
-            tempSpan.style.position = 'absolute';
-            tempSpan.style.visibility = 'hidden';
-            tempSpan.style.whiteSpace = 'pre';
-            document.body.appendChild(tempSpan);
-            
-            // Calculate average character width
-            tempSpan.textContent = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            const avgCharWidth = tempSpan.offsetWidth / tempSpan.textContent.length;
-            document.body.removeChild(tempSpan);
-            
-            // Calculate cursor position
-            const paddingLeft = parseFloat(computedStyle.paddingLeft) || 0;
-            const borderLeft = parseFloat(computedStyle.borderLeftWidth) || 0;
-            const offsetX = clickX - paddingLeft - borderLeft;
-            const estimatedPosition = Math.round(offsetX / avgCharWidth);
-            const cursorPosition = Math.max(0, Math.min(estimatedPosition, value.length));
-            
-            inputRef.current.setSelectionRange(cursorPosition, cursorPosition);
-          }
-          
-          // For textarea, try to position cursor based on click coordinates
-          if (multiline && inputRef.current instanceof HTMLTextAreaElement) {
-            const rect = inputRef.current.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const clickY = e.clientY - rect.top;
-            
-            // Get the computed style
-            const computedStyle = window.getComputedStyle(inputRef.current);
-            const fontSize = parseFloat(computedStyle.fontSize);
-            const lineHeight = parseFloat(computedStyle.lineHeight);
-            const paddingTop = parseFloat(computedStyle.paddingTop) || 0;
-            const paddingLeft = parseFloat(computedStyle.paddingLeft) || 0;
-            
-            // Calculate line number
-            const lineNumber = Math.floor((clickY - paddingTop) / lineHeight);
-            const lines = value.split('\n');
-            const targetLine = Math.max(0, Math.min(lineNumber, lines.length - 1));
-            
-            // Calculate character position within the line
-            const tempSpan = document.createElement('span');
-            tempSpan.style.fontSize = fontSize + 'px';
-            tempSpan.style.fontFamily = computedStyle.fontFamily;
-            tempSpan.style.position = 'absolute';
-            tempSpan.style.visibility = 'hidden';
-            tempSpan.style.whiteSpace = 'pre';
-            document.body.appendChild(tempSpan);
-            
-            tempSpan.textContent = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            const avgCharWidth = tempSpan.offsetWidth / tempSpan.textContent.length;
-            document.body.removeChild(tempSpan);
-            
-            const offsetX = clickX - paddingLeft;
-            const charPos = Math.round(offsetX / avgCharWidth);
-            const lineContent = lines[targetLine] || '';
-            const charPosition = Math.max(0, Math.min(charPos, lineContent.length));
-            
-            // Calculate absolute position
-            let absolutePosition = 0;
-            for (let i = 0; i < targetLine; i++) {
-              absolutePosition += lines[i].length + 1; // +1 for newline
-            }
-            absolutePosition += charPosition;
-            
-            inputRef.current.setSelectionRange(absolutePosition, absolutePosition);
-          }
-        }
-      }, 10);
-    };
-
-    const handleDisplayMouseDown = (e: React.MouseEvent) => {
-      // Allow text selection by dragging
-      if (editMode && !isEditing) {
-        e.preventDefault();
-        handleDisplayClick(e);
-      }
-    };
 
     const handleFocus = () => {
-      setEditingField(fieldId);
-      setLocalValue(value);
+      if (editMode) {
+        setEditingField(fieldId);
+      }
     };
 
     const handleBlur = () => {
       setEditingField(null);
-      onChange(localValue);
     };
 
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter' && !multiline) {
-        e.preventDefault();
-        handleBlur();
-      } else if (e.key === 'Escape') {
-        setLocalValue(value);
-        setEditingField(null);
-      } else if (e.key === 'Tab') {
-        // Allow Tab navigation to work naturally
-        // The browser will handle focus movement
-      }
-    };
-
-    const handleMouseDown = (e: React.MouseEvent) => {
-      // Prevent blur when clicking on the same field
-      if (isEditing) {
-        e.preventDefault();
-      }
-    };
-
+    // If not in edit mode, just show the text
     if (!editMode) {
-      return multiline ? (
-        <div className={`whitespace-pre-wrap ${className}`}>{value}</div>
-      ) : (
-        <span className={className}>{value}</span>
-      );
-    }
-
-    // Show editable display when not editing
-    if (!isEditing) {
-      return multiline ? (
-        <div 
-          ref={displayRef as React.RefObject<HTMLDivElement>}
-          onClick={handleDisplayClick}
-          className={`whitespace-pre-wrap cursor-text hover:bg-gray-50 hover:border hover:border-gray-200 rounded p-2 transition-all duration-200 ${className} ${!value ? 'text-gray-400 italic' : ''}`}
-        >
-          {value || placeholder}
-        </div>
-      ) : (
-        <span 
-          ref={displayRef as React.RefObject<HTMLSpanElement>}
-          onClick={handleDisplayClick}
-          className={`cursor-text hover:bg-gray-50 hover:border hover:border-gray-200 rounded px-2 py-1 transition-all duration-200 ${className} ${!value ? 'text-gray-400 italic' : ''}`}
-        >
+      if (multiline) {
+        return (
+          <div className={`whitespace-pre-wrap ${className}`}>
+            {value || placeholder}
+          </div>
+        );
+      }
+      return (
+        <span className={className}>
           {value || placeholder}
         </span>
       );
     }
 
-    return multiline ? (
-      <textarea
-        ref={inputRef as React.RefObject<HTMLTextAreaElement>}
-        value={localValue}
-        onChange={(e) => setLocalValue(e.target.value)}
+    // Use RichTextEditor for summary (multiline with formatting)
+    if (fieldId === 'summary') {
+      return (
+        <RichTextEditor
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          className={className}
+          isEditing={isEditing}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+        />
+      );
+    }
+
+    // Use InlineTextEditor for other fields
+    return (
+      <InlineTextEditor
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className={className}
+        isEditing={isEditing}
         onFocus={handleFocus}
         onBlur={handleBlur}
-        onMouseDown={handleMouseDown}
-        onKeyDown={handleKeyDown}
-        className={`w-full bg-transparent border border-transparent outline-none resize-none hover:bg-gray-50 focus:bg-blue-50 focus:border-blue-200 focus:rounded p-2 transition-all duration-200 ${className}`}
-        placeholder={placeholder}
-        rows={3}
-        style={{
-          color: 'inherit',
-          backgroundColor: 'transparent',
-          ...(className.includes('text-white') && { color: 'white' }),
-          ...(className.includes('text-gray-300') && { color: '#d1d5db' })
-        }}
-      />
-    ) : (
-      <input
-        ref={inputRef as React.RefObject<HTMLInputElement>}
-        type="text"
-        value={localValue}
-        onChange={(e) => setLocalValue(e.target.value)}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        onMouseDown={handleMouseDown}
-        onKeyDown={handleKeyDown}
-        className={`w-full bg-transparent border border-transparent outline-none hover:bg-gray-50 focus:bg-blue-50 focus:border-blue-200 focus:rounded px-2 py-1 transition-all duration-200 ${className}`}
-        placeholder={placeholder}
-        style={{
-          color: 'inherit',
-          backgroundColor: 'transparent',
-          ...(className.includes('text-white') && { color: 'white' }),
-          ...(className.includes('text-gray-300') && { color: '#d1d5db' })
-        }}
+        multiline={multiline}
       />
     );
-  });
+  };
 
   const SectionHeader: React.FC<{ title: string; sectionId: string; onAIImprove?: () => void }> = ({ 
     title, 

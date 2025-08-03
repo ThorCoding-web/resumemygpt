@@ -1,3 +1,76 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* CKEditor Styles */
+.rich-text-editor .ck-editor__editable {
+  min-height: 100px;
+  border: none !important;
+  background: transparent !important;
+  color: inherit !important;
+  font-family: inherit !important;
+  font-size: inherit !important;
+  line-height: inherit !important;
+  padding: 0.5rem !important;
+}
+
+.rich-text-editor .ck-editor__editable:focus {
+  box-shadow: none !important;
+  border: 1px solid #3b82f6 !important;
+  border-radius: 0.375rem !important;
+}
+
+.rich-text-editor .ck-toolbar {
+  border: none !important;
+  background: transparent !important;
+  padding: 0.25rem !important;
+}
+
+.rich-text-editor .ck-toolbar__items {
+  gap: 0.25rem !important;
+}
+
+.rich-text-editor .ck-button {
+  background: transparent !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 0.25rem !important;
+  padding: 0.25rem 0.5rem !important;
+  font-size: 0.875rem !important;
+  color: #6b7280 !important;
+  transition: all 0.2s !important;
+}
+
+.rich-text-editor .ck-button:hover {
+  background: #f3f4f6 !important;
+  border-color: #d1d5db !important;
+  color: #374151 !important;
+}
+
+.rich-text-editor .ck-button.ck-on {
+  background: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+  color: white !important;
+}
+
+/* Dark theme support for side-stripe template */
+.bg-gray-800 .rich-text-editor .ck-editor__editable {
+  color: white !important;
+}
+
+.bg-gray-800 .rich-text-editor .ck-button {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.bg-gray-800 .rich-text-editor .ck-button:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: white !important;
+}
+
+.bg-gray-800 .rich-text-editor .ck-button.ck-on {
+  background: #3b82f6 !important;
+  border-color: #3b82f6 !important;
+  color: white !important;
+}
