@@ -12,10 +12,15 @@ interface ResumePreviewProps {
   onUpdateResumeData: (data: ResumeData) => void;
   activeSection: string;
   editMode: boolean;
+  sectionOrder?: string[];
 }
 
-const ResumePreview: React.FC<ResumePreviewProps> = ({ template, resumeData, onUpdateResumeData, activeSection, editMode }) => {
+const ResumePreview: React.FC<ResumePreviewProps> = ({ template, resumeData, onUpdateResumeData, activeSection, editMode, sectionOrder }) => {
   const [editingField, setEditingField] = useState<string | null>(null);
+  
+  // Use provided section order or default order
+  const defaultSectionOrder = ['personal', 'summary', 'experience', 'education', 'skills', 'projects', 'certifications'];
+  const currentSectionOrder = sectionOrder || defaultSectionOrder;
 
   const handlePersonalInfoChange = useCallback((field: string, value: string) => {
     onUpdateResumeData({

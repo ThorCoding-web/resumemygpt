@@ -60,8 +60,8 @@ const TemplateSelection: React.FC<TemplateSelectionProps> = ({ onSelectTemplate,
   const TemplateCard: React.FC<{ template: Template }> = ({ template }) => (
     <div className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden group cursor-pointer"
          onClick={() => onSelectTemplate(template)}>
-      <div className="aspect-[3/4] bg-gray-50 relative overflow-hidden border-b">
-        <div className="absolute inset-2 transform scale-75 origin-top-left">
+      <div className="aspect-[3/4] bg-gray-50 relative overflow-hidden border-b p-2">
+        <div className="w-full h-full">
           <TemplatePreview 
             template={template}
             resumeData={{
@@ -101,7 +101,13 @@ const TemplateSelection: React.FC<TemplateSelectionProps> = ({ onSelectTemplate,
               ],
               skills: ['JavaScript', 'React', 'Node.js', 'Python', 'AWS', 'Docker'],
               projects: [],
-              certifications: []
+              certifications: [],
+              training: [],
+              leadership: [],
+              publications: [],
+              hackathons: [],
+              languages: [],
+              customSections: []
             }}
             onUpdateResumeData={() => {}}
             activeSection=""
@@ -109,7 +115,7 @@ const TemplateSelection: React.FC<TemplateSelectionProps> = ({ onSelectTemplate,
             isPreview={true}
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-white/20 to-transparent group-hover:from-blue-500/10 transition-all duration-200"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-white/10 to-transparent group-hover:from-blue-500/5 transition-all duration-200"></div>
       </div>
       
       <div className="p-6">

@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { ArrowLeft, Eye, Download, BarChart3, Sparkles, User, FileText as FileTextIcon, Briefcase, Award, BookOpen, Code, MessageSquare, PlusCircle } from 'lucide-react';
+import { ArrowLeft, Eye, Download, BarChart3, Sparkles, User, FileText as FileTextIcon, Briefcase, Award, BookOpen, Code, MessageSquare, PlusCircle, Menu, X } from 'lucide-react';
 import { Template } from '../App';
 import ResumePreview from './ResumePreview';
 import AIAssistant from './AIAssistant';
@@ -182,6 +182,7 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ template, jobDetails, onBac
   const [showAI, setShowAI] = useState(false);
   const [atsScore] = useState(85); // Mock ATS score
   const [previewMode, setPreviewMode] = useState(false);
+  const [showEditor, setShowEditor] = useState(true);
   
   // Section order for drag and drop
   const [sectionOrder, setSectionOrder] = useState<string[]>([
@@ -581,41 +582,58 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ template, jobDetails, onBac
       </header>
 
       <div className="flex h-[calc(100vh-80px)]">
-        {/* Left Side - Resume Information Form */}
-        <div className="w-1/2 bg-white border-r overflow-y-auto">
-          <div className="p-6 pl-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Resume Information</h2>
-            <p className="text-gray-600 mb-8">Fill out your information and see your resume update in real-time. Drag sections to reorder them.</p>
-
-            <DraggableContainer
-              items={sectionOrder}
-              onReorder={handleSectionReorder}
-              className="space-y-8"
-            >
-              {sectionOrder.map((sectionId) => renderSection(sectionId))}
-            </DraggableContainer>
-          </div>
-        </div>
-
-        {/* Right Side - Live Preview */}
-        <div className="w-1/2 bg-gray-50 overflow-y-auto">
+        {/* Left Side - Live Preview */}
+        <div className={`${showEditor ? 'w-1/2' : 'w-full'} bg-gray-50 overflow-y-auto transition-all duration-300`}>
           <div className="p-6">
-            <div className="flex items-center space-x-2 mb-6">
-              <Eye className="w-5 h-5 text-gray-600" />
-              <h2 className="text-xl font-semibold text-gray-900">Live Preview</h2>
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-2">
+                <Eye className="w-5 h-5 text-gray-600" />
+                <h2 className="text-xl font-semibold text-gray-900">Live Preview</h2>
+              </div>
+              
+              {/* Hamburger Menu Button */}
+              <button
+                onClick={() => setShowEditor(!showEditor)}
+                className="flex items-center space-x-2 px-3 py-2 bg-white hover:bg-gray-50 border border-gray-200 rounded-lg transition-colors"
+                title={showEditor ? 'Hide Editor' : 'Show Editor'}
+              >
+                {showEditor ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+                <span className="text-sm font-medium">Resume Editor</span>
+              </button>
             </div>
             
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <ResumePreview
-                template={template}
-                resumeData={resumeData}
-                onUpdateResumeData={setResumeData}
-                activeSection={activeSection}
-                editMode={true} // Keep this true for inline editing on the preview
-              />
+              <DraggableContainer
+                items={sectionOrder}
+                onReorder={handleSectionReorder}
+                className="space-y-0"
+              >
+                <ResumePreview
+                  template={template}
+                  resumeData={resumeData}
+                  onUpdateResumeData={setResumeData}
+                  activeSection={activeSection}
+                  editMode={true}
+                  sectionOrder={sectionOrder}
+                />
+              </DraggableContainer>
             </div>
           </div>
         </div>
+
+        {/* Right Side - Resume Information Form */}
+        {showEditor && (
+          <div className="w-1/2 bg-white border-l overflow-y-auto">
+            <div className="p-6">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">Resume Information</h2>
+              <p className="text-gray-600 mb-8">Fill out your information and see your resume update in real-time. Sections can be reordered by dragging in the preview.</p>
+
+              <div className="space-y-8">
+                {sectionOrder.map((sectionId) => renderSection(sectionId))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
