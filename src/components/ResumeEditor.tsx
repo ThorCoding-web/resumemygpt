@@ -188,7 +188,7 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ template, jobDetails, onBac
   const [showExportMenu, setShowExportMenu] = useState(false);
   
   // Section order for drag and drop
-  const [sectionOrder, setSectionOrder] = useState<string[]>([
+  const [sectionOrder] = useState<string[]>([
     'personal',
     'summary',
     'experience',
@@ -376,8 +376,9 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ template, jobDetails, onBac
   }, []);
 
   // Handle section reordering
-  const handleSectionReorder = useCallback((newOrder: string[]) => {
-    setSectionOrder(newOrder);
+  const handleSectionReorder = useCallback(() => {
+    // Section reordering functionality can be implemented here
+    console.log('Section reorder triggered');
   }, []);
 
   const SectionWrapper: React.FC<{title: string; icon: React.ReactNode; onAddItem: () => void; addItemText: string; children: React.ReactNode}> = useCallback(({title, icon, onAddItem, addItemText, children}) => (
@@ -676,6 +677,7 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ template, jobDetails, onBac
                   onUpdateResumeData={setResumeData}
                   activeSection={activeSection}
                   editMode={true}
+                  sectionOrder={sectionOrder}
                   sectionOrder={sectionOrder}
                 />
               </div>

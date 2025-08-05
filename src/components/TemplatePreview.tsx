@@ -89,7 +89,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
         </div>
 
         {/* Projects */}
-        {resumeData.projects && resumeData.projects.length > 0 && (
+        {resumeData.projects && resumeData.projects.length > 0 && !isPreview && (
           <div className={isPreview ? 'mb-0.5' : 'mb-6'}>
             <h3 className={`font-semibold text-gray-900 uppercase tracking-wide ${isPreview ? 'mb-0.5' : 'mb-3'}`}>
               Projects
@@ -119,7 +119,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
         )}
 
         {/* Certifications */}
-        {resumeData.certifications && resumeData.certifications.length > 0 && (
+        {resumeData.certifications && resumeData.certifications.length > 0 && !isPreview && (
           <div className={isPreview ? 'mb-0.5' : 'mb-6'}>
             <h3 className={`font-semibold text-gray-900 uppercase tracking-wide ${isPreview ? 'mb-0.5' : 'mb-3'}`}>
               Certifications
@@ -133,8 +133,24 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
           </div>
         )}
 
+        {/* Training */}
+        {resumeData.training && resumeData.training.length > 0 && !isPreview && (
+          <div className={isPreview ? 'mb-0.5' : 'mb-6'}>
+            <h3 className={`font-semibold text-gray-900 uppercase tracking-wide ${isPreview ? 'mb-0.5' : 'mb-3'}`}>
+              Training & Workshops
+            </h3>
+            {resumeData.training.map((item, index) => (
+              <div key={item.id} className={isPreview ? 'mb-0.5' : 'mb-2'}>
+                <h4 className={`font-semibold text-gray-900 ${isPreview ? previewTitleScale : titleScale}`}>{item.title}</h4>
+                <div className="text-gray-600">{item.organizer}</div>
+                <div className="text-gray-700 text-sm">{item.notes}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Languages */}
-        {resumeData.languages && resumeData.languages.length > 0 && (
+        {resumeData.languages && resumeData.languages.length > 0 && !isPreview && (
           <div className={isPreview ? 'mb-0.5' : 'mb-6'}>
             <h3 className={`font-semibold text-gray-900 uppercase tracking-wide ${isPreview ? 'mb-0.5' : 'mb-3'}`}>
               Languages
@@ -150,7 +166,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
         )}
 
         {/* Custom Sections */}
-        {resumeData.customSections && resumeData.customSections.length > 0 && (
+        {resumeData.customSections && resumeData.customSections.length > 0 && !isPreview && (
           <>
             {resumeData.customSections.map((section, sectionIndex) => (
               <div key={section.id} className={isPreview ? 'mb-0.5' : 'mb-6'}>
@@ -222,7 +238,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
         </div>
 
         {/* Education & Skills */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className={`grid ${isPreview ? 'grid-cols-1 gap-1' : 'grid-cols-2 gap-4'}`}>
           <div>
             <h3 className={`font-semibold text-blue-600 ${isPreview ? 'mb-0.5' : 'mb-3'}`}>EDUCATION</h3>
             {resumeData.education.map((edu, index) => (
@@ -241,6 +257,39 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
             </div>
           </div>
         </div>
+
+        {/* Projects */}
+        {resumeData.projects && resumeData.projects.length > 0 && !isPreview && (
+          <div className={isPreview ? 'mb-0.5' : 'mb-6 mt-6'}>
+            <h3 className={`font-semibold text-blue-600 ${isPreview ? 'mb-0.5' : 'mb-3'}`}>PROJECTS</h3>
+            {resumeData.projects.map((project, index) => (
+              <div key={project.id} className={isPreview ? 'mb-0.5' : 'mb-4'}>
+                <h4 className={`font-semibold text-gray-900 ${isPreview ? previewTitleScale : titleScale}`}>
+                  {project.name} {project.tag && <span className="text-blue-600">({project.tag})</span>}
+                </h4>
+                <div className="text-gray-600">{project.techStack} | {project.date}</div>
+                <ul className={`space-y-1 ${isPreview ? 'mt-0.5' : 'mt-2'}`}>
+                  {project.bullets.map((bullet, bulletIndex) => (
+                    <li key={bulletIndex} className="text-gray-700">• {bullet}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Certifications */}
+        {resumeData.certifications && resumeData.certifications.length > 0 && !isPreview && (
+          <div className={isPreview ? 'mb-0.5' : 'mb-6'}>
+            <h3 className={`font-semibold text-blue-600 ${isPreview ? 'mb-0.5' : 'mb-3'}`}>CERTIFICATIONS</h3>
+            {resumeData.certifications.map((cert, index) => (
+              <div key={cert.id} className={isPreview ? 'mb-0.5' : 'mb-2'}>
+                <h4 className={`font-semibold text-gray-900 ${isPreview ? previewTitleScale : titleScale}`}>{cert.name}</h4>
+                <div className="text-gray-600">{cert.issuer} {cert.year && `• ${cert.year}`}</div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -306,6 +355,30 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
           <hr className={isPreview ? 'mb-0.5' : 'mb-2'} />
           <p className="text-gray-700">{resumeData.skills.slice(0, isPreview ? 3 : resumeData.skills.length).join(', ')}</p>
         </div>
+
+        {/* Projects */}
+        {resumeData.projects && resumeData.projects.length > 0 && !isPreview && (
+          <div className={isPreview ? 'mb-0.5' : 'mb-4 mt-4'}>
+            <h3 className={`font-bold text-gray-900 ${isPreview ? 'mb-0.5' : 'mb-2'}`}>PROJECTS</h3>
+            <hr className={isPreview ? 'mb-0.5' : 'mb-2'} />
+            {resumeData.projects.map((project, index) => (
+              <div key={project.id} className={isPreview ? 'mb-0.5' : 'mb-3'}>
+                <div className="flex justify-between">
+                  <h4 className={`font-bold text-gray-900 ${isPreview ? previewTitleScale : titleScale}`}>
+                    {project.name} {project.tag && `(${project.tag})`}
+                  </h4>
+                  <span className="text-gray-600">{project.date}</span>
+                </div>
+                <div className="text-gray-700">{project.techStack}</div>
+                <ul className={isPreview ? 'mt-0.5' : 'mt-1'}>
+                  {project.bullets.map((bullet, bulletIndex) => (
+                    <li key={bulletIndex} className="text-gray-700">• {bullet}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -361,7 +434,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
         </div>
 
         {/* Education & Skills */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className={`grid ${isPreview ? 'grid-cols-1 gap-1' : 'grid-cols-2 gap-4'}`}>
           <div>
             <h3 className={`font-semibold text-purple-600 border-b-2 border-purple-200 ${isPreview ? 'mb-0.5 pb-0' : 'mb-3 pb-1'}`}>
               EDUCATION
@@ -386,6 +459,38 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
             </div>
           </div>
         </div>
+
+        {/* Projects */}
+        {resumeData.projects && resumeData.projects.length > 0 && !isPreview && (
+          <div className={isPreview ? 'mb-0.5' : 'mb-6 mt-6'}>
+            <h3 className={`font-semibold text-purple-600 border-b-2 border-purple-200 ${isPreview ? 'mb-0.5 pb-0' : 'mb-3 pb-1'}`}>
+              PROJECTS
+            </h3>
+            {resumeData.projects.map((project, index) => (
+              <div key={project.id} className={isPreview ? 'mb-0.5' : 'mb-4'}>
+                <div className={`flex justify-between items-start ${isPreview ? 'mb-0.5' : 'mb-2'}`}>
+                  <div>
+                    <h4 className={`font-semibold text-gray-900 ${isPreview ? previewTitleScale : titleScale}`}>
+                      {project.name} {project.tag && <span className="text-purple-600">({project.tag})</span>}
+                    </h4>
+                    <div className="text-purple-600 font-medium">{project.techStack}</div>
+                  </div>
+                  <div className={`text-gray-500 text-sm bg-gray-100 rounded ${isPreview ? 'px-0.5 py-0.5' : 'px-2 py-1'}`}>
+                    {project.date}
+                  </div>
+                </div>
+                <ul className={`space-y-1 ${isPreview ? 'ml-1' : 'ml-4'}`}>
+                  {project.bullets.map((bullet, bulletIndex) => (
+                    <li key={bulletIndex} className="flex items-start">
+                      <span className="text-purple-400 mr-2 mt-1">▸</span>
+                      <span className="text-gray-700">{bullet}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -424,6 +529,21 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
             </div>
           ))}
         </div>
+
+        {/* Projects in sidebar */}
+        {resumeData.projects && resumeData.projects.length > 0 && !isPreview && (
+          <div className={isPreview ? 'mb-0.5' : 'mb-6 mt-6'}>
+            <h3 className={`font-semibold text-white ${isPreview ? 'mb-0.5' : 'mb-3'}`}>PROJECTS</h3>
+            <div className={`space-y-2 ${isPreview ? 'text-[2px]' : 'text-sm'}`}>
+              {resumeData.projects.slice(0, 2).map((project, index) => (
+                <div key={project.id}>
+                  <h4 className="font-semibold text-white">{project.name}</h4>
+                  <div className="text-gray-300">{project.techStack}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Main Content */}
@@ -451,6 +571,19 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
             </div>
           ))}
         </div>
+
+        {/* Certifications */}
+        {resumeData.certifications && resumeData.certifications.length > 0 && !isPreview && (
+          <div className={isPreview ? 'mb-0.5' : 'mb-6 mt-6'}>
+            <h3 className={`font-semibold text-gray-900 ${isPreview ? 'mb-0.5' : 'mb-3'}`}>CERTIFICATIONS</h3>
+            {resumeData.certifications.map((cert, index) => (
+              <div key={cert.id} className={isPreview ? 'mb-0.5' : 'mb-2'}>
+                <h4 className={`font-semibold text-gray-900 ${isPreview ? previewTitleScale : titleScale}`}>{cert.name}</h4>
+                <div className="text-gray-600">{cert.issuer} {cert.year && `• ${cert.year}`}</div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -507,7 +640,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
         </div>
 
         {/* Education & Skills */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className={`grid ${isPreview ? 'grid-cols-1 gap-1' : 'grid-cols-2 gap-4'}`}>
           <div>
             <h3 className={`font-semibold text-gray-900 ${isPreview ? 'mb-0.5' : 'mb-3'}`}>
               <span className="bg-gray-900 text-white px-2 py-1">EDUCATION</span>
@@ -530,6 +663,40 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
             </div>
           </div>
         </div>
+
+        {/* Projects */}
+        {resumeData.projects && resumeData.projects.length > 0 && !isPreview && (
+          <div className={isPreview ? 'mb-0.5' : 'mb-6 mt-6'}>
+            <h3 className={`font-semibold text-gray-900 ${isPreview ? 'mb-0.5' : 'mb-3'}`}>
+              <span className="bg-gray-900 text-white px-2 py-1">PROJECTS</span>
+            </h3>
+            {resumeData.projects.map((project, index) => (
+              <div key={project.id} className={isPreview ? 'mb-0.5' : 'mb-4'}>
+                <div className={`border-l-4 border-gray-900 ${isPreview ? 'pl-0.5' : 'pl-4'}`}>
+                  <div className={`flex justify-between items-start ${isPreview ? 'mb-0.5' : 'mb-2'}`}>
+                    <div>
+                      <h4 className={`font-semibold text-gray-900 ${isPreview ? previewTitleScale : titleScale}`}>
+                        {project.name} {project.tag && <span className="text-gray-600">({project.tag})</span>}
+                      </h4>
+                      <div className="text-gray-600 font-medium">{project.techStack}</div>
+                    </div>
+                    <div className="text-gray-500 text-sm">
+                      {project.date}
+                    </div>
+                  </div>
+                  <ul className="space-y-1">
+                    {project.bullets.map((bullet, bulletIndex) => (
+                      <li key={bulletIndex} className="flex items-start">
+                        <span className="text-gray-400 mr-2 mt-1">■</span>
+                        <span className="text-gray-700">{bullet}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
