@@ -1,10 +1,12 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
-import { Plus, Trash2, Sparkles } from 'lucide-react';
+import { Plus, Trash2, Sparkles, GripVertical } from 'lucide-react';
 import { Template } from '../App';
 import { ResumeData } from './ResumeEditor';
 import TemplatePreview from './TemplatePreview';
 import RichTextEditor from './RichTextEditor';
 import InlineTextEditor from './InlineTextEditor';
+import DraggableContainer from './DraggableContainer';
+import DraggableSection from './DraggableSection';
 
 interface ResumePreviewProps {
   template: Template;
@@ -17,10 +19,19 @@ interface ResumePreviewProps {
 
 const ResumePreview: React.FC<ResumePreviewProps> = ({ template, resumeData, onUpdateResumeData, activeSection, editMode, sectionOrder }) => {
   const [editingField, setEditingField] = useState<string | null>(null);
+  const [localSectionOrder, setLocalSectionOrder] = useState<string[]>(
+    sectionOrder || ['personal', 'summary', 'experience', 'education', 'skills', 'projects', 'certifications', 'languages', 'custom']
+  );
   
-  // Use provided section order or default order
-  const defaultSectionOrder = ['personal', 'summary', 'experience', 'education', 'skills', 'projects', 'certifications'];
-  const currentSectionOrder = sectionOrder || defaultSectionOrder;
+  useEffect(() => {
+    if (sectionOrder) {
+      setLocalSectionOrder(sectionOrder);
+    }
+  }, [sectionOrder]);
+
+  const handleSectionReorder = useCallback((newOrder: string[]) => {
+    setLocalSectionOrder(newOrder);
+  }, []);
 
   const handlePersonalInfoChange = useCallback((field: string, value: string) => {
     onUpdateResumeData({
@@ -36,6 +47,186 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ template, resumeData, onU
     onUpdateResumeData({
       ...resumeData,
       summary: value
+    });
+  }, [resumeData, onUpdateResumeData]);
+
+  const handleProjectChange = useCallback((index: number, field: string, value: any) => {
+    const newProjects = [...resumeData.projects];
+    newProjects[index] = { ...newProjects[index], [field]: value };
+    onUpdateResumeData({
+      ...resumeData,
+      projects: newProjects
+    });
+  }, [resumeData, onUpdateResumeData]);
+
+  const handleProjectBulletChange = useCallback((projIndex: number, bulletIndex: number, value: string) => {
+    const newProjects = [...resumeData.projects];
+    const newBullets = [...newProjects[projIndex].bullets];
+    newBullets[bulletIndex] = value;
+    newProjects[projIndex] = { ...newProjects[projIndex], bullets: newBullets };
+    onUpdateResumeData({
+      ...resumeData,
+      projects: newProjects
+    });
+  }, [resumeData, onUpdateResumeData]);
+
+  const addProject = useCallback(() => {
+    const newProject = {
+      id: Date.now().toString(),
+      name: 'New Project',
+      tag: '',
+      techStack: 'Technology Stack',
+      date: '2024',
+      bullets: ['Project achievement or description'],
+      url: ''
+    };
+    onUpdateResumeData({
+      ...resumeData,
+      projects: [...resumeData.projects, newProject]
+    });
+  }, [resumeData, onUpdateResumeData]);
+
+  const removeProject = useCallback((index: number) => {
+    const newProjects = resumeData.projects.filter((_, i) => i !== index);
+    onUpdateResumeData({
+      ...resumeData,
+      projects: newProjects
+    });
+  }, [resumeData, onUpdateResumeData]);
+
+  const addProjectBullet = useCallback((projIndex: number) => {
+    const newProjects = [...resumeData.projects];
+    newProjects[projIndex].bullets.push('New project achievement');
+    onUpdateResumeData({
+      ...resumeData,
+      projects: newProjects
+    });
+  }, [resumeData, onUpdateResumeData]);
+
+  const removeProjectBullet = useCallback((projIndex: number, bulletIndex: number) => {
+    const newProjects = [...resumeData.projects];
+    newProjects[projIndex].bullets = newProjects[projIndex].bullets.filter((_, i) => i !== bulletIndex);
+    onUpdateResumeData({
+      ...resumeData,
+      projects: newProjects
+    });
+  }, [resumeData, onUpdateResumeData]);
+
+  const handleCertificationChange = useCallback((index: number, field: string, value: string) => {
+    const newCertifications = [...resumeData.certifications];
+    newCertifications[index] = { ...newCertifications[index], [field]: value };
+    onUpdateResumeData({
+      ...resumeData,
+      certifications: newCertifications
+    });
+  }, [resumeData, onUpdateResumeData]);
+
+  const addCertification = useCallback(() => {
+    const newCertification = {
+      id: Date.now().toString(),
+      name: 'Certification Name',
+      issuer: 'Issuing Organization',
+      year: '2024'
+    };
+    onUpdateResumeData({
+      ...resumeData,
+      certifications: [...resumeData.certifications, newCertification]
+    });
+  }, [resumeData, onUpdateResumeData]);
+
+  const removeCertification = useCallback((index: number) => {
+    const newCertifications = resumeData.certifications.filter((_, i) => i !== index);
+    onUpdateResumeData({
+      ...resumeData,
+      certifications: newCertifications
+    });
+  }, [resumeData, onUpdateResumeData]);
+
+  const handleLanguageChange = useCallback((index: number, field: string, value: string) => {
+    const newLanguages = [...resumeData.languages];
+    newLanguages[index] = { ...newLanguages[index], [field]: value };
+    onUpdateResumeData({
+      ...resumeData,
+      languages: newLanguages
+    });
+  }, [resumeData, onUpdateResumeData]);
+
+  const addLanguage = useCallback(() => {
+    const newLanguage = {
+      id: Date.now().toString(),
+      name: 'Language',
+      fluency: 'Fluency Level'
+    };
+    onUpdateResumeData({
+      ...resumeData,
+      languages: [...resumeData.languages, newLanguage]
+    });
+  }, [resumeData, onUpdateResumeData]);
+
+  const removeLanguage = useCallback((index: number) => {
+    const newLanguages = resumeData.languages.filter((_, i) => i !== index);
+    onUpdateResumeData({
+      ...resumeData,
+      languages: newLanguages
+    });
+  }, [resumeData, onUpdateResumeData]);
+
+  const handleCustomSectionChange = useCallback((sectionIndex: number, field: string, value: string) => {
+    const newCustomSections = [...resumeData.customSections];
+    newCustomSections[sectionIndex] = { ...newCustomSections[sectionIndex], [field]: value };
+    onUpdateResumeData({
+      ...resumeData,
+      customSections: newCustomSections
+    });
+  }, [resumeData, onUpdateResumeData]);
+
+  const handleCustomSectionItemChange = useCallback((sectionIndex: number, itemIndex: number, value: string) => {
+    const newCustomSections = [...resumeData.customSections];
+    newCustomSections[sectionIndex].items[itemIndex].content = value;
+    onUpdateResumeData({
+      ...resumeData,
+      customSections: newCustomSections
+    });
+  }, [resumeData, onUpdateResumeData]);
+
+  const addCustomSection = useCallback(() => {
+    const newSection = {
+      id: Date.now().toString(),
+      title: 'Custom Section',
+      items: [{ id: (Date.now() + 1).toString(), content: 'Custom item' }]
+    };
+    onUpdateResumeData({
+      ...resumeData,
+      customSections: [...resumeData.customSections, newSection]
+    });
+  }, [resumeData, onUpdateResumeData]);
+
+  const removeCustomSection = useCallback((index: number) => {
+    const newCustomSections = resumeData.customSections.filter((_, i) => i !== index);
+    onUpdateResumeData({
+      ...resumeData,
+      customSections: newCustomSections
+    });
+  }, [resumeData, onUpdateResumeData]);
+
+  const addCustomSectionItem = useCallback((sectionIndex: number) => {
+    const newCustomSections = [...resumeData.customSections];
+    newCustomSections[sectionIndex].items.push({
+      id: Date.now().toString(),
+      content: 'New custom item'
+    });
+    onUpdateResumeData({
+      ...resumeData,
+      customSections: newCustomSections
+    });
+  }, [resumeData, onUpdateResumeData]);
+
+  const removeCustomSectionItem = useCallback((sectionIndex: number, itemIndex: number) => {
+    const newCustomSections = [...resumeData.customSections];
+    newCustomSections[sectionIndex].items = newCustomSections[sectionIndex].items.filter((_, i) => i !== itemIndex);
+    onUpdateResumeData({
+      ...resumeData,
+      customSections: newCustomSections
     });
   }, [resumeData, onUpdateResumeData]);
 
@@ -157,7 +348,7 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ template, resumeData, onU
     // Use RichTextEditor for summary (multiline with formatting)
     if (fieldId === 'summary') {
       return (
-        <RichTextEditor
+        <InlineTextEditor
           value={value}
           onChange={onChange}
           placeholder={placeholder}
@@ -165,6 +356,7 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ template, resumeData, onU
           isEditing={isEditing}
           onFocus={handleFocus}
           onBlur={handleBlur}
+          multiline={true}
         />
       );
     }
@@ -204,6 +396,466 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ template, resumeData, onU
   );
 
   // Create a wrapper that provides editing functionality over the template preview
+  const renderSection = (sectionId: string) => {
+    switch (sectionId) {
+      case 'personal':
+        return (
+          <div key="personal" className="group mb-8">
+            <div className={`text-center border-b pb-6 mb-8 ${activeSection === 'personal' ? 'bg-blue-50 -mx-2 px-2 py-1 rounded' : ''}`}>
+              <h1 className="font-bold text-gray-900 text-3xl mb-2">
+                <EditableField
+                  fieldId="name"
+                  value={resumeData.personalInfo.name}
+                  onChange={(value) => handlePersonalInfoChange('name', value)}
+                />
+              </h1>
+              <div className="text-gray-600">
+                <div>
+                  <EditableField
+                    fieldId="email"
+                    value={resumeData.personalInfo.email}
+                    onChange={(value) => handlePersonalInfoChange('email', value)}
+                  />
+                  {' • '}
+                  <EditableField
+                    fieldId="phone"
+                    value={resumeData.personalInfo.phone}
+                    onChange={(value) => handlePersonalInfoChange('phone', value)}
+                  />
+                </div>
+                <div>
+                  <EditableField
+                    fieldId="location"
+                    value={resumeData.personalInfo.location}
+                    onChange={(value) => handlePersonalInfoChange('location', value)}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'summary':
+        return (
+          <div key="summary" className="group mb-8">
+            <SectionHeader title="Professional Summary" sectionId="summary" />
+            <EditableField
+              fieldId="summary"
+              value={resumeData.summary}
+              onChange={handleSummaryChange}
+              className="text-gray-700 leading-relaxed"
+              multiline
+            />
+          </div>
+        );
+
+      case 'experience':
+        return (
+          <div key="experience" className="group mb-8">
+            <SectionHeader title="Experience" sectionId="experience" />
+            {resumeData.experience.map((exp, index) => (
+              <div key={exp.id} className="mb-6 last:mb-0 relative group">
+                {editMode && (
+                  <button
+                    onClick={() => removeExperience(index)}
+                    className="absolute -right-2 -top-2 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h4 className="font-semibold text-gray-900">
+                      <EditableField
+                        fieldId={`exp-title-${index}`}
+                        value={exp.title}
+                        onChange={(value) => handleExperienceChange(index, 'title', value)}
+                      />
+                    </h4>
+                    <div className="text-gray-600 font-medium">
+                      <EditableField
+                        fieldId={`exp-company-${index}`}
+                        value={exp.company}
+                        onChange={(value) => handleExperienceChange(index, 'company', value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="text-gray-500 text-sm">
+                    <EditableField
+                      fieldId={`exp-dates-${index}`}
+                      value={`${exp.startDate} - ${exp.current ? 'Present' : exp.endDate}`}
+                      onChange={(value) => {
+                        const [start, end] = value.split(' - ');
+                        handleExperienceChange(index, 'startDate', start);
+                        if (end !== 'Present') {
+                          handleExperienceChange(index, 'endDate', end);
+                          handleExperienceChange(index, 'current', false);
+                        } else {
+                          handleExperienceChange(index, 'current', true);
+                        }
+                      }}
+                    />
+                  </div>
+                </div>
+                <ul className="space-y-1 ml-4">
+                  {exp.bullets.map((bullet, bulletIndex) => (
+                    <li key={bulletIndex} className="flex items-start group">
+                      <span className="text-gray-400 mr-2 mt-1">•</span>
+                      <div className="flex-1 relative">
+                        <EditableField
+                          fieldId={`bullet-${index}-${bulletIndex}`}
+                          value={bullet}
+                          onChange={(value) => handleBulletChange(index, bulletIndex, value)}
+                          className="text-gray-700"
+                        />
+                        {editMode && (
+                          <button
+                            onClick={() => removeBullet(index, bulletIndex)}
+                            className="absolute -right-6 top-0 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                  {editMode && (
+                    <li>
+                      <button
+                        onClick={() => addBullet(index)}
+                        className="flex items-center space-x-1 text-blue-600 hover:text-blue-700 text-sm"
+                      >
+                        <Plus className="w-3 h-3" />
+                        <span>Add bullet</span>
+                      </button>
+                    </li>
+                  )}
+                </ul>
+              </div>
+            ))}
+            {editMode && (
+              <button
+                onClick={addExperience}
+                className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 mt-4"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add Experience</span>
+              </button>
+            )}
+          </div>
+        );
+
+      case 'education':
+        return (
+          <div key="education" className="group mb-8">
+            <SectionHeader title="Education" sectionId="education" />
+            {resumeData.education.map((edu, index) => (
+              <div key={edu.id} className="mb-4 last:mb-0">
+                <h4 className="font-semibold text-gray-900">
+                  <EditableField
+                    fieldId={`edu-degree-${index}`}
+                    value={edu.degree}
+                    onChange={(value) => handleEducationChange(index, 'degree', value)}
+                  />
+                </h4>
+                <div className="text-gray-600">
+                  <EditableField
+                    fieldId={`edu-school-${index}`}
+                    value={edu.school}
+                    onChange={(value) => handleEducationChange(index, 'school', value)}
+                  />
+                  {edu.graduationDate && (
+                    <>
+                      {' • '}
+                      <EditableField
+                        fieldId={`edu-date-${index}`}
+                        value={edu.graduationDate}
+                        onChange={(value) => handleEducationChange(index, 'graduationDate', value)}
+                      />
+                    </>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        );
+
+      case 'skills':
+        return (
+          <div key="skills" className="group mb-8">
+            <SectionHeader title="Skills" sectionId="skills" />
+            <div className="flex flex-wrap gap-2">
+              {resumeData.skills.map((skill, index) => (
+                <span key={index} className="bg-gray-100 text-gray-700 rounded-full px-3 py-1">
+                  {skill}
+                </span>
+              ))}
+            </div>
+          </div>
+        );
+
+      case 'projects':
+        if (!resumeData.projects || resumeData.projects.length === 0) return null;
+        return (
+          <div key="projects" className="group mb-8">
+            <SectionHeader title="Projects" sectionId="projects" />
+            {resumeData.projects.map((project, index) => (
+              <div key={project.id} className="mb-6 last:mb-0 relative group">
+                {editMode && (
+                  <button
+                    onClick={() => removeProject(index)}
+                    className="absolute -right-2 -top-2 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h4 className="font-semibold text-gray-900">
+                      <EditableField
+                        fieldId={`proj-name-${index}`}
+                        value={project.name}
+                        onChange={(value) => handleProjectChange(index, 'name', value)}
+                      />
+                      {project.tag && (
+                        <span className="text-blue-600 ml-2">
+                          (<EditableField
+                            fieldId={`proj-tag-${index}`}
+                            value={project.tag}
+                            onChange={(value) => handleProjectChange(index, 'tag', value)}
+                          />)
+                        </span>
+                      )}
+                    </h4>
+                    <div className="text-gray-600 text-sm">
+                      <EditableField
+                        fieldId={`proj-tech-${index}`}
+                        value={project.techStack}
+                        onChange={(value) => handleProjectChange(index, 'techStack', value)}
+                      />
+                    </div>
+                  </div>
+                  <div className="text-gray-500 text-sm">
+                    <EditableField
+                      fieldId={`proj-date-${index}`}
+                      value={project.date}
+                      onChange={(value) => handleProjectChange(index, 'date', value)}
+                    />
+                  </div>
+                </div>
+                <ul className="space-y-1 ml-4">
+                  {project.bullets.map((bullet, bulletIndex) => (
+                    <li key={bulletIndex} className="flex items-start group">
+                      <span className="text-gray-400 mr-2 mt-1">•</span>
+                      <div className="flex-1 relative">
+                        <EditableField
+                          fieldId={`proj-bullet-${index}-${bulletIndex}`}
+                          value={bullet}
+                          onChange={(value) => handleProjectBulletChange(index, bulletIndex, value)}
+                          className="text-gray-700"
+                        />
+                        {editMode && (
+                          <button
+                            onClick={() => removeProjectBullet(index, bulletIndex)}
+                            className="absolute -right-6 top-0 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                  {editMode && (
+                    <li>
+                      <button
+                        onClick={() => addProjectBullet(index)}
+                        className="flex items-center space-x-1 text-blue-600 hover:text-blue-700 text-sm"
+                      >
+                        <Plus className="w-3 h-3" />
+                        <span>Add bullet</span>
+                      </button>
+                    </li>
+                  )}
+                </ul>
+              </div>
+            ))}
+            {editMode && (
+              <button
+                onClick={addProject}
+                className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 mt-4"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add Project</span>
+              </button>
+            )}
+          </div>
+        );
+
+      case 'certifications':
+        if (!resumeData.certifications || resumeData.certifications.length === 0) return null;
+        return (
+          <div key="certifications" className="group mb-8">
+            <SectionHeader title="Certifications" sectionId="certifications" />
+            {resumeData.certifications.map((cert, index) => (
+              <div key={cert.id} className="mb-4 last:mb-0 relative group">
+                {editMode && (
+                  <button
+                    onClick={() => removeCertification(index)}
+                    className="absolute -right-2 -top-2 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                )}
+                <h4 className="font-semibold text-gray-900">
+                  <EditableField
+                    fieldId={`cert-name-${index}`}
+                    value={cert.name}
+                    onChange={(value) => handleCertificationChange(index, 'name', value)}
+                  />
+                </h4>
+                <div className="text-gray-600">
+                  <EditableField
+                    fieldId={`cert-issuer-${index}`}
+                    value={cert.issuer}
+                    onChange={(value) => handleCertificationChange(index, 'issuer', value)}
+                  />
+                  {cert.year && (
+                    <>
+                      {' • '}
+                      <EditableField
+                        fieldId={`cert-year-${index}`}
+                        value={cert.year}
+                        onChange={(value) => handleCertificationChange(index, 'year', value)}
+                      />
+                    </>
+                  )}
+                </div>
+              </div>
+            ))}
+            {editMode && (
+              <button
+                onClick={addCertification}
+                className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 mt-4"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add Certification</span>
+              </button>
+            )}
+          </div>
+        );
+
+      case 'languages':
+        if (!resumeData.languages || resumeData.languages.length === 0) return null;
+        return (
+          <div key="languages" className="group mb-8">
+            <SectionHeader title="Languages" sectionId="languages" />
+            <div className="flex flex-wrap gap-2">
+              {resumeData.languages.map((lang, index) => (
+                <span key={lang.id} className="text-gray-700">
+                  <EditableField
+                    fieldId={`lang-name-${index}`}
+                    value={lang.name}
+                    onChange={(value) => handleLanguageChange(index, 'name', value)}
+                  />
+                  {' ('}
+                  <EditableField
+                    fieldId={`lang-fluency-${index}`}
+                    value={lang.fluency}
+                    onChange={(value) => handleLanguageChange(index, 'fluency', value)}
+                  />
+                  {')'}
+                  {index < resumeData.languages.length - 1 ? ', ' : ''}
+                </span>
+              ))}
+            </div>
+            {editMode && (
+              <button
+                onClick={addLanguage}
+                className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 mt-4"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add Language</span>
+              </button>
+            )}
+          </div>
+        );
+
+      case 'custom':
+        if (!resumeData.customSections || resumeData.customSections.length === 0) return null;
+        return (
+          <>
+            {resumeData.customSections.map((section, sectionIndex) => (
+              <div key={section.id} className="group mb-8">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900 uppercase tracking-wide">
+                    <EditableField
+                      fieldId={`custom-title-${sectionIndex}`}
+                      value={section.title}
+                      onChange={(value) => handleCustomSectionChange(sectionIndex, 'title', value)}
+                    />
+                  </h3>
+                  {editMode && (
+                    <button
+                      onClick={() => removeCustomSection(sectionIndex)}
+                      className="text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+                <ul className="space-y-1 ml-4">
+                  {section.items.map((item, itemIndex) => (
+                    <li key={item.id} className="flex items-start group">
+                      <span className="text-gray-400 mr-2 mt-1">•</span>
+                      <div className="flex-1 relative">
+                        <EditableField
+                          fieldId={`custom-item-${sectionIndex}-${itemIndex}`}
+                          value={item.content}
+                          onChange={(value) => handleCustomSectionItemChange(sectionIndex, itemIndex, value)}
+                          className="text-gray-700"
+                        />
+                        {editMode && (
+                          <button
+                            onClick={() => removeCustomSectionItem(sectionIndex, itemIndex)}
+                            className="absolute -right-6 top-0 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                  {editMode && (
+                    <li>
+                      <button
+                        onClick={() => addCustomSectionItem(sectionIndex)}
+                        className="flex items-center space-x-1 text-blue-600 hover:text-blue-700 text-sm"
+                      >
+                        <Plus className="w-3 h-3" />
+                        <span>Add item</span>
+                      </button>
+                    </li>
+                  )}
+                </ul>
+              </div>
+            ))}
+            {editMode && (
+              <button
+                onClick={addCustomSection}
+                className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 mt-4"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add Custom Section</span>
+              </button>
+            )}
+          </>
+        );
+
+      default:
+        return null;
+    }
+  };
+
   const renderEditableTemplate = () => {
     // Side Stripe Template
     if (template.id === 'side-stripe') {
@@ -385,186 +1037,25 @@ const ResumePreview: React.FC<ResumePreviewProps> = ({ template, resumeData, onU
     // Classic Chronological Template
     if (template.id === 'classic-chrono') {
       return (
-        <div className="bg-white shadow-lg max-w-[8.5in] mx-auto p-8">
-          {/* Header */}
-          <div className="text-center border-b pb-6 mb-8">
-            <h1 className="font-bold text-gray-900 text-3xl mb-2">
-              <EditableField
-                fieldId="name"
-                value={resumeData.personalInfo.name}
-                onChange={(value) => handlePersonalInfoChange('name', value)}
-              />
-            </h1>
-            <div className="text-gray-600 space-y-1">
-              <div>
-                <EditableField
-                  fieldId="email"
-                  value={resumeData.personalInfo.email}
-                  onChange={(value) => handlePersonalInfoChange('email', value)}
-                />
-                {' • '}
-                <EditableField
-                  fieldId="phone"
-                  value={resumeData.personalInfo.phone}
-                  onChange={(value) => handlePersonalInfoChange('phone', value)}
-                />
-              </div>
-              <div>
-                <EditableField
-                  fieldId="location"
-                  value={resumeData.personalInfo.location}
-                  onChange={(value) => handlePersonalInfoChange('location', value)}
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Summary */}
-          <div className="mb-6">
-            <SectionHeader title="Professional Summary" sectionId="summary" />
-            <EditableField
-              fieldId="summary"
-              value={resumeData.summary}
-              onChange={handleSummaryChange}
-              className="text-gray-700 leading-relaxed"
-              multiline
-            />
-          </div>
-
-          {/* Experience */}
-          <div className="mb-6">
-            <SectionHeader title="Experience" sectionId="experience" />
-            {resumeData.experience.map((exp, index) => (
-              <div key={exp.id} className="mb-4 relative group">
-                {editMode && (
-                  <button
-                    onClick={() => removeExperience(index)}
-                    className="absolute -right-2 -top-2 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                )}
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h4 className="font-semibold text-gray-900">
-                      <EditableField
-                        fieldId={`exp-title-${index}`}
-                        value={exp.title}
-                        onChange={(value) => handleExperienceChange(index, 'title', value)}
-                      />
-                    </h4>
-                    <div className="text-gray-600 font-medium">
-                      <EditableField
-                        fieldId={`exp-company-${index}`}
-                        value={exp.company}
-                        onChange={(value) => handleExperienceChange(index, 'company', value)}
-                      />
-                    </div>
-                  </div>
-                  <div className="text-gray-500 text-sm">
-                    <EditableField
-                      fieldId={`exp-dates-${index}`}
-                      value={`${exp.startDate} - ${exp.current ? 'Present' : exp.endDate}`}
-                      onChange={(value) => {
-                        const [start, end] = value.split(' - ');
-                        handleExperienceChange(index, 'startDate', start);
-                        if (end !== 'Present') {
-                          handleExperienceChange(index, 'endDate', end);
-                          handleExperienceChange(index, 'current', false);
-                        } else {
-                          handleExperienceChange(index, 'current', true);
-                        }
-                      }}
-                    />
-                  </div>
-                </div>
-                <ul className="space-y-1 ml-4">
-                  {exp.bullets.map((bullet, bulletIndex) => (
-                    <li key={bulletIndex} className="flex items-start group">
-                      <span className="text-gray-400 mr-2 mt-1">•</span>
-                      <div className="flex-1 relative">
-                        <EditableField
-                          fieldId={`bullet-${index}-${bulletIndex}`}
-                          value={bullet}
-                          onChange={(value) => handleBulletChange(index, bulletIndex, value)}
-                          className="text-gray-700"
-                        />
-                        {editMode && (
-                          <button
-                            onClick={() => removeBullet(index, bulletIndex)}
-                            className="absolute -right-6 top-0 text-red-500 hover:text-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </button>
-                        )}
-                      </div>
-                    </li>
-                  ))}
-                  {editMode && (
-                    <li>
-                      <button
-                        onClick={() => addBullet(index)}
-                        className="flex items-center space-x-1 text-blue-600 hover:text-blue-700 text-sm"
-                      >
-                        <Plus className="w-3 h-3" />
-                        <span>Add bullet</span>
-                      </button>
-                    </li>
-                  )}
-                </ul>
-              </div>
-            ))}
-            {editMode && (
-              <button
-                onClick={addExperience}
-                className="flex items-center space-x-2 text-blue-600 hover:text-blue-700 mt-4"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Add Experience</span>
-              </button>
-            )}
-          </div>
-
-          {/* Education */}
-          <div className="mb-6">
-            <SectionHeader title="Education" sectionId="education" />
-            {resumeData.education.map((edu, index) => (
-              <div key={edu.id}>
-                <h4 className="font-semibold text-gray-900">
-                  <EditableField
-                    fieldId={`edu-degree-${index}`}
-                    value={edu.degree}
-                    onChange={(value) => handleEducationChange(index, 'degree', value)}
-                  />
-                </h4>
-                <div className="text-gray-600">
-                  <EditableField
-                    fieldId={`edu-school-${index}`}
-                    value={edu.school}
-                    onChange={(value) => handleEducationChange(index, 'school', value)}
-                  />
-                  {' • '}
-                  <EditableField
-                    fieldId={`edu-date-${index}`}
-                    value={edu.graduationDate}
-                    onChange={(value) => handleEducationChange(index, 'graduationDate', value)}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Skills */}
-          <div>
-            <SectionHeader title="Skills" sectionId="skills" />
-            <div className="flex flex-wrap gap-2">
-              {resumeData.skills.map((skill, index) => (
-                <span key={index} className="bg-gray-100 text-gray-700 rounded-full px-3 py-1">
-                  {skill}
-                </span>
+        <div className="bg-white shadow-lg max-w-[8.5in] mx-auto p-8 relative">
+          {editMode && (
+            <DraggableContainer
+              items={localSectionOrder}
+              onReorder={handleSectionReorder}
+              className="space-y-0"
+            >
+              {localSectionOrder.map((sectionId) => (
+                <DraggableSection key={sectionId} id={sectionId}>
+                  {renderSection(sectionId)}
+                </DraggableSection>
               ))}
-            </div>
-          </div>
+            </DraggableContainer>
+          )}
+          {!editMode && (
+            <>
+              {localSectionOrder.map((sectionId) => renderSection(sectionId))}
+            </>
+          )}
         </div>
       );
     }

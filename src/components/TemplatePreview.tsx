@@ -33,7 +33,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
           <h1 className={`font-bold text-gray-900 ${isPreview ? previewHeaderScale : 'text-3xl'} ${isPreview ? 'mb-0.5' : 'mb-2'}`}>
             {resumeData.personalInfo.name}
           </h1>
-          <div className={`text-gray-600 ${isPreview ? 'space-y-0' : 'space-y-1'}`}>
+          <div className="text-gray-600">
             <div>{resumeData.personalInfo.email} • {resumeData.personalInfo.phone}</div>
             <div>{resumeData.personalInfo.location}</div>
           </div>
@@ -83,10 +83,92 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
           {resumeData.education.map((edu, index) => (
             <div key={edu.id}>
               <h4 className={`font-semibold text-gray-900 ${isPreview ? previewTitleScale : titleScale}`}>{edu.degree}</h4>
-              <div className="text-gray-600">{edu.school} • {edu.graduationDate}</div>
+              <div className="text-gray-600">{edu.school} {edu.graduationDate && `• ${edu.graduationDate}`}</div>
             </div>
           ))}
         </div>
+
+        {/* Projects */}
+        {resumeData.projects && resumeData.projects.length > 0 && (
+          <div className={isPreview ? 'mb-0.5' : 'mb-6'}>
+            <h3 className={`font-semibold text-gray-900 uppercase tracking-wide ${isPreview ? 'mb-0.5' : 'mb-3'}`}>
+              Projects
+            </h3>
+            {resumeData.projects.slice(0, isPreview ? 1 : resumeData.projects.length).map((project, index) => (
+              <div key={project.id} className={isPreview ? 'mb-0.5' : 'mb-4'}>
+                <div className={`flex justify-between items-start ${isPreview ? 'mb-0.5' : 'mb-2'}`}>
+                  <div>
+                    <h4 className={`font-semibold text-gray-900 ${isPreview ? previewTitleScale : titleScale}`}>
+                      {project.name} {project.tag && <span className="text-blue-600">({project.tag})</span>}
+                    </h4>
+                    <div className="text-gray-600 text-sm">{project.techStack}</div>
+                  </div>
+                  <div className="text-gray-500 text-sm">{project.date}</div>
+                </div>
+                <ul className={`space-y-1 ${isPreview ? 'ml-1' : 'ml-4'}`}>
+                  {project.bullets.slice(0, isPreview ? 1 : project.bullets.length).map((bullet, bulletIndex) => (
+                    <li key={bulletIndex} className="flex items-start">
+                      <span className="text-gray-400 mr-2 mt-1">•</span>
+                      <span className="text-gray-700">{bullet}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Certifications */}
+        {resumeData.certifications && resumeData.certifications.length > 0 && (
+          <div className={isPreview ? 'mb-0.5' : 'mb-6'}>
+            <h3 className={`font-semibold text-gray-900 uppercase tracking-wide ${isPreview ? 'mb-0.5' : 'mb-3'}`}>
+              Certifications
+            </h3>
+            {resumeData.certifications.map((cert, index) => (
+              <div key={cert.id} className={isPreview ? 'mb-0.5' : 'mb-2'}>
+                <h4 className={`font-semibold text-gray-900 ${isPreview ? previewTitleScale : titleScale}`}>{cert.name}</h4>
+                <div className="text-gray-600">{cert.issuer} {cert.year && `• ${cert.year}`}</div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Languages */}
+        {resumeData.languages && resumeData.languages.length > 0 && (
+          <div className={isPreview ? 'mb-0.5' : 'mb-6'}>
+            <h3 className={`font-semibold text-gray-900 uppercase tracking-wide ${isPreview ? 'mb-0.5' : 'mb-3'}`}>
+              Languages
+            </h3>
+            <div className={`flex flex-wrap ${isPreview ? 'gap-0.5' : 'gap-2'}`}>
+              {resumeData.languages.map((lang, index) => (
+                <span key={lang.id} className="text-gray-700">
+                  {lang.name} ({lang.fluency}){index < resumeData.languages.length - 1 ? ', ' : ''}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Custom Sections */}
+        {resumeData.customSections && resumeData.customSections.length > 0 && (
+          <>
+            {resumeData.customSections.map((section, sectionIndex) => (
+              <div key={section.id} className={isPreview ? 'mb-0.5' : 'mb-6'}>
+                <h3 className={`font-semibold text-gray-900 uppercase tracking-wide ${isPreview ? 'mb-0.5' : 'mb-3'}`}>
+                  {section.title}
+                </h3>
+                <ul className={`space-y-1 ${isPreview ? 'ml-1' : 'ml-4'}`}>
+                  {section.items.map((item, itemIndex) => (
+                    <li key={item.id} className="flex items-start">
+                      <span className="text-gray-400 mr-2 mt-1">•</span>
+                      <span className="text-gray-700">{item.content}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </>
+        )}
 
         {/* Skills */}
         <div>
@@ -146,7 +228,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
             {resumeData.education.map((edu, index) => (
               <div key={edu.id}>
                 <h4 className={`font-semibold text-gray-900 ${isPreview ? previewTitleScale : titleScale}`}>{edu.degree}</h4>
-                <div className="text-gray-600">{edu.school}</div>
+                <div className="text-gray-600">{edu.school} {edu.graduationDate && `• ${edu.graduationDate}`}</div>
               </div>
             ))}
           </div>
@@ -154,7 +236,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
             <h3 className={`font-semibold text-blue-600 ${isPreview ? 'mb-0.5' : 'mb-3'}`}>SKILLS</h3>
             <div className="space-y-1">
               {resumeData.skills.slice(0, isPreview ? 3 : resumeData.skills.length).map((skill, index) => (
-                <div key={index} className="text-gray-700">• {skill}</div>
+                <div key={index} className="text-gray-700">{skill}</div>
               ))}
             </div>
           </div>
@@ -211,7 +293,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
             <div key={edu.id} className="flex justify-between">
               <div>
                 <h4 className={`font-bold text-gray-900 ${isPreview ? previewTitleScale : titleScale}`}>{edu.degree}</h4>
-                <div className="text-gray-700">{edu.school}, {edu.location}</div>
+                <div className="text-gray-700">{edu.school}{edu.location && `, ${edu.location}`}</div>
               </div>
               <span className="text-gray-600">{edu.graduationDate}</span>
             </div>
@@ -287,8 +369,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
             {resumeData.education.map((edu, index) => (
               <div key={edu.id}>
                 <h4 className={`font-semibold text-gray-900 ${isPreview ? previewTitleScale : titleScale}`}>{edu.degree}</h4>
-                <div className="text-gray-600">{edu.school}</div>
-                <div className="text-purple-600 text-sm">{edu.graduationDate}</div>
+                <div className="text-gray-600">{edu.school} {edu.graduationDate && `• ${edu.graduationDate}`}</div>
               </div>
             ))}
           </div>
@@ -434,8 +515,7 @@ const TemplatePreview: React.FC<TemplatePreviewProps> = ({
             {resumeData.education.map((edu, index) => (
               <div key={edu.id} className={`border-l-4 border-gray-300 ${isPreview ? 'pl-0.5' : 'pl-4'}`}>
                 <h4 className={`font-semibold text-gray-900 ${isPreview ? previewTitleScale : titleScale}`}>{edu.degree}</h4>
-                <div className="text-gray-600">{edu.school}</div>
-                <div className="text-gray-500 text-sm">{edu.graduationDate}</div>
+                <div className="text-gray-600">{edu.school} {edu.graduationDate && `• ${edu.graduationDate}`}</div>
               </div>
             ))}
           </div>

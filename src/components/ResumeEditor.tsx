@@ -1,10 +1,11 @@
 import React, { useState, useCallback } from 'react';
-import { ArrowLeft, Eye, Download, BarChart3, Sparkles, User, FileText as FileTextIcon, Briefcase, Award, BookOpen, Code, MessageSquare, PlusCircle, Menu, X } from 'lucide-react';
+import { ArrowLeft, Eye, Download, BarChart3, Sparkles, User, FileText as FileTextIcon, Briefcase, Award, BookOpen, Code, MessageSquare, PlusCircle, Menu, X, FileDown } from 'lucide-react';
 import { Template } from '../App';
 import ResumePreview from './ResumePreview';
 import AIAssistant from './AIAssistant';
 import DraggableContainer from './DraggableContainer';
 import DraggableSection from './DraggableSection';
+import { exportToPDF, exportToWord } from '../services/exportService';
 
 interface ResumeEditorProps {
   template: Template;
@@ -183,6 +184,8 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ template, jobDetails, onBac
   const [atsScore] = useState(85); // Mock ATS score
   const [previewMode, setPreviewMode] = useState(false);
   const [showEditor, setShowEditor] = useState(true);
+  const [isExporting, setIsExporting] = useState(false);
+  const [showExportMenu, setShowExportMenu] = useState(false);
   
   // Section order for drag and drop
   const [sectionOrder, setSectionOrder] = useState<string[]>([
@@ -198,8 +201,30 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ template, jobDetails, onBac
     'custom'
   ]);
 
-  const handleExportPDF = () => {
-    alert('PDF export would be implemented with a library like jsPDF or html2pdf');
+  const handleExportPDF = async () => {
+    setIsExporting(true);
+    setShowExportMenu(false);
+    try {
+      await exportToPDF('resume-preview', `${resumeData.personalInfo.name.replace(/\s+/g, '_')}_Resume.pdf`);
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Export failed. Please try again.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleExportWord = async () => {
+    setIsExporting(true);
+    setShowExportMenu(false);
+    try {
+      await exportToWord('resume-preview', `${resumeData.personalInfo.name.replace(/\s+/g, '_')}_Resume.doc`);
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Export failed. Please try again.');
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const handlePersonalInfoChange = useCallback((field: string, value: string) => {
@@ -575,7 +600,48 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ template, jobDetails, onBac
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2 bg-green-50 text-green-700 px-3 py-2 rounded-lg"><BarChart3 className="w-4 h-4" /><span className="text-sm font-medium">ATS Score: {atsScore}%</span></div>
               <button onClick={() => setPreviewMode(!previewMode)} className="flex items-center space-x-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg"><Eye className="w-4 h-4" /><span>{previewMode ? 'Edit' : 'Preview'}</span></button>
-              <button onClick={handleExportPDF} className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"><Download className="w-4 h-4" /><span>Export PDF</span></button>
+              
+              {/* Export Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setShowExportMenu(!showExportMenu)}
+                  disabled={isExporting}
+                  className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white rounded-lg transition-colors"
+                >
+                  {isExporting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Exporting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-4 h-4" />
+                      <span>Export</span>
+                    </>
+                  )}
+                </button>
+                
+                {showExportMenu && !isExporting && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border z-50">
+                    <div className="py-1">
+                      <button
+                        onClick={handleExportPDF}
+                        className="flex items-center space-x-2 w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 transition-colors"
+                      >
+                        <FileDown className="w-4 h-4 text-red-500" />
+                        <span>Export as PDF</span>
+                      </button>
+                      <button
+                        onClick={handleExportWord}
+                        className="flex items-center space-x-2 w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-50 transition-colors"
+                      >
+                        <FileDown className="w-4 h-4 text-blue-500" />
+                        <span>Export as Word</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -603,11 +669,7 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ template, jobDetails, onBac
             </div>
             
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <DraggableContainer
-                items={sectionOrder}
-                onReorder={handleSectionReorder}
-                className="space-y-0"
-              >
+              <div id="resume-preview">
                 <ResumePreview
                   template={template}
                   resumeData={resumeData}
@@ -616,7 +678,7 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ template, jobDetails, onBac
                   editMode={true}
                   sectionOrder={sectionOrder}
                 />
-              </DraggableContainer>
+              </div>
             </div>
           </div>
         </div>
@@ -635,6 +697,14 @@ const ResumeEditor: React.FC<ResumeEditorProps> = ({ template, jobDetails, onBac
           </div>
         )}
       </div>
+      
+      {/* Click outside to close export menu */}
+      {showExportMenu && (
+        <div 
+          className="fixed inset-0 z-40" 
+          onClick={() => setShowExportMenu(false)}
+        />
+      )}
     </div>
   );
 };

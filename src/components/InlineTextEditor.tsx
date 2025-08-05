@@ -41,17 +41,26 @@ const InlineTextEditor: React.FC<InlineTextEditorProps> = ({
 
   const handleBlur = () => {
     onBlur?.();
-    onChange(localValue);
+    if (localValue !== value) {
+      onChange(localValue);
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !multiline) {
       e.preventDefault();
-      handleBlur();
+      if (localValue !== value) {
+        onChange(localValue);
+      }
+      onBlur?.();
     } else if (e.key === 'Escape') {
       setLocalValue(value);
       onBlur?.();
     }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setLocalValue(e.target.value);
   };
 
   // Show display text when not editing
@@ -69,7 +78,7 @@ const InlineTextEditor: React.FC<InlineTextEditorProps> = ({
   const commonProps = {
     ref: inputRef as any,
     value: localValue,
-    onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setLocalValue(e.target.value),
+    onChange: handleChange,
     onFocus: handleFocus,
     onBlur: handleBlur,
     onKeyDown: handleKeyDown,
